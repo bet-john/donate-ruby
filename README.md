@@ -1,0 +1,2 @@
+# donate-ruby
+Ruby project
