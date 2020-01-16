@@ -3,7 +3,7 @@ class UsersController < ApplicationController
   before_action :set_user, only: [:show, :edit, :update, :destroy]
 
   def create
-    return validate_params  if !validate_params.nil?
+    return if !validate_params.nil?
     user = nil
     begin
       ApplicationRecord.transaction do
@@ -14,15 +14,24 @@ class UsersController < ApplicationController
     render json: { success: true, message: "Yay! You are now a member." } 
   end
 
-  private
-    def user_params
-      params.require(:user).permit(:name, :email, :phone_number, :password)
-    end
+  def show
+    User.find_by_id(get_user_by_id_params[:id])
+  end
 
-    def validate_params 
-      return render json: { success: false, error: 'Please provide a valid name.' }, status: :unauthorized unless user_params[:name]
-      return render json: { success: false, error: 'Please provide a valid email.' }, status: :unauthorized unless user_params[:email]
-      return render json: { success: false, error: 'Please provide a valid contact number.' }, status: :unauthorized unless user_params[:phone_number]
-      return render json: { success: false, error: 'Please provide a valid password.' }, status: :unauthorized unless user_params[:password]
-    end
+  private
+
+  def user_params
+    params.require(:user).permit(:name, :email, :phone_number, :password)
+  end
+
+  def get_user_by_id_params
+    params.require(:user).permit(:id)
+  end
+  
+  def validate_params 
+    return render json: { success: false, error: 'Please provide a valid name.' }, status: :unauthorized unless user_params[:name]
+    return render json: { success: false, error: 'Please provide a valid email.' }, status: :unauthorized unless user_params[:email]
+    return render json: { success: false, error: 'Please provide a valid contact number.' }, status: :unauthorized unless user_params[:phone_number]
+    return render json: { success: false, error: 'Please provide a valid password.' }, status: :unauthorized unless user_params[:password]
+  end
 end
